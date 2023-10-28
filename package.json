@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "agora-access-token": "^2.0.4",
+    "agora-rtc-sdk-ng": "^4.19.2",
     "agora-rtm-sdk": "^1.5.1",
     "mongoose": "^7.6.3",
     "next": "14.0.0",
