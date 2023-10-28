@@ -230,10 +230,18 @@ export default function Home() {
       <main className={styles.main}>{room?._id}
       {isChatting ? (
         <>
-          {room?._id}
-          <button onClick={handleNextClick}>next</button>
+          {room?._id}{"(RoomId)"}
+          <h4>GET InterviewReady !!</h4>
           <div className="chat-window">
             <div className="video-panel">
+            <div className="video-stream">
+                {themVideo && (
+                  <VideoPlayer
+                    style={{ width: "100%", height: "100%" }}
+                    videoTrack={themVideo}
+                  />
+                )}
+              </div>
               <div className="video-stream">
                 {myVideo && (
                   <VideoPlayer
@@ -242,14 +250,7 @@ export default function Home() {
                   />
                 )}
               </div>
-              <div className="video-stream">
-                {themVideo && (
-                  <VideoPlayer
-                    style={{ width: "100%", height: "100%" }}
-                    videoTrack={themVideo}
-                  />
-                )}
-              </div>
+              <button onClick={handleNextClick}>NEXT</button>
             </div>
 
             <div className="chat-panel">
@@ -264,11 +265,13 @@ export default function Home() {
               <form onSubmit={handleSubmitMessage}>
                 <input
                   value={input}
+                  placeholder="Type something here..."
                   onChange={(e) => setInput(e.target.value)}
                 ></input>
-                <button>submit</button>
+                <button>ENTER</button>
               </form>
             </div>
+            
           </div>
         </>
         ):(

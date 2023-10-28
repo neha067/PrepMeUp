@@ -114,12 +114,12 @@ a {
 .video-panel {
   display: flex;
   flex-direction: column;
-  gap: 50px;
+  gap: 2px;
 }
 
 .video-stream {
-  width: 200px;
-  height: 160px;
+  width: 400px;
+  height: 200px;
   background: white;
 }
 
