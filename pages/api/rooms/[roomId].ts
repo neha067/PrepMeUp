@@ -28,6 +28,12 @@ export default async function handler(
       });
       res.status(200).json("success");
       break;
+    case "DELETE":
+      await Room.deleteOne({
+        _id:roomId
+      });
+      res.status(200).json("success");
+      break;
     default:
       res.status(400).json("no method for this endpoint");
       break;

@@ -59,6 +59,7 @@ function setRoomToWaiting(roomId: string) {
     response.json()
   );
 }
+
 async function connectToAgoraRtc(
   roomId: string,
   userId: string,
@@ -127,14 +128,57 @@ async function connectToAgoraRtm(
 }
 export default function Home() {
   const [userId] = useState(parseInt(`${Math.random() * 1e6}`) + "");
-  const [room, setRoom] = useState<Room | undefined>();
+  const [room, setRoom] = useState<Room>();
   const [messages, setMessages] = useState<TMessage[]>([]);
   const [input, setInput] = useState("");
-  const channelRef = useRef<RtmChannel>();
-  const rtcClientRef = useRef<IAgoraRTCClient>();
+  const channelRef = useRef<RtmChannel>(); //rtm text msg
+  const rtcClientRef = useRef<IAgoraRTCClient>(); //rtc video chat ref
   const [themVideo, setThemVideo] = useState<IRemoteVideoTrack>();
   const [myVideo, setMyVideo] = useState<ICameraVideoTrack>();
   const [themAudio, setThemAudio] = useState<IRemoteAudioTrack>();
+
+  function deleteRoom(roomId: string) {
+      return fetch(`/api/rooms/${roomId}`, { method: "DELETE" }).then((response) =>
+      response.json()
+    );
+  }
+  
+  useEffect(() => {
+    const id = window.localStorage.getItem('id') as string;
+    const status = window.localStorage.getItem('status') as string;
+    console.log("here is your room id"+ id + status);
+    
+    const handlePageRefresh = (event) => {
+      event.preventDefault(); 
+      if(id && status == 'chatting')
+      setRoomToWaiting(id);
+      else if(id)
+      deleteRoom(id);
+    };
+
+    const handleWindowClose = () => {
+      if(id && status == 'chatting')
+      setRoomToWaiting(id);
+      else if(id)
+      deleteRoom(id);
+    };
+
+    window.addEventListener('beforeunload', handlePageRefresh);
+    window.addEventListener('unload', handleWindowClose);
+
+    return () => {
+      window.removeEventListener('beforeunload', handlePageRefresh);
+      window.removeEventListener('unload', handleWindowClose);
+    };
+  },[])
+  
+  useEffect(() => {
+    if(room){
+      window.localStorage.setItem('id',room._id);
+      window.localStorage.setItem('status',room.status);
+    }
+    
+  }, [room]);
   
   async function connectToARoom() {
     setThemAudio(undefined);
@@ -208,9 +252,23 @@ export default function Home() {
     setInput("");
   }
   function handleNextClick() {
+    //check if its already waiting if yes then delete
+    if (room?.status == "waiting") {
+      deleteRoom(room._id);
+    }
     connectToARoom();
   }
-
+  function handlePageReload() {
+    if (room?.status == "waiting") {
+      console.log("idiot");
+      deleteRoom(room._id);
+    }
+  }
+  function handleWindowClose() {
+    if (room?.status == "waiting") {
+      deleteRoom(room._id);
+    }
+  }
   function handleStartChattingClicked() {
     connectToARoom();
   }
@@ -228,6 +286,7 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>{room?._id}
+      
       {isChatting ? (
         <>
           {room?._id}{"(RoomId)"}
